@@ -1,5 +1,4 @@
-use crate::cli::get_music_input;
-use crate::orchestrator::{Note, Orchestrator};
+use crate::cli::{get_filename, get_filepath, get_music_input};
 use std::error::Error;
 
 mod cli;
@@ -10,8 +9,14 @@ mod wav;
 const SAMPLE_RATE: u32 = 44100;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let music_input = get_music_input()?;
-    let pcm_samples = music_input.pcm_samples(SAMPLE_RATE);
-    wav::write("output/simple_octave.wav", &pcm_samples, SAMPLE_RATE)?;
+    let input_file = get_filepath()?;
+    let orchestrator = get_music_input(input_file.as_str())?;
+    let pcm_samples = orchestrator.pcm_samples(SAMPLE_RATE);
+    let filename = get_filename(&input_file)?;
+    wav::write(
+        format!("output/{}.wav", filename).as_str(),
+        &pcm_samples,
+        SAMPLE_RATE,
+    )?;
     Ok(())
 }

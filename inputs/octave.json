@@ -8,7 +8,7 @@
     { "id": 7, "beats": 1.0, "octave": 4, "amplitude": 1 },
     { "id": 9, "beats": 1.0, "octave": 4, "amplitude": 1 },
     { "id": 11, "beats": 1.0, "octave": 4, "amplitude": 1 },
-    { "id": 12, "beats": 1.0, "octave": 5, "amplitude": 1 },
+    { "id": 0, "beats": 1.0, "octave": 5, "amplitude": 1 },
     { "id": 11, "beats": 1.0, "octave": 4, "amplitude": 1 },
     { "id": 9, "beats": 1.0, "octave": 4, "amplitude": 1 },
     { "id": 7, "beats": 1.0, "octave": 4, "amplitude": 1 },

@@ -11,9 +11,13 @@ pub struct Note {
 
 impl Note {
     pub fn frequency(&self) -> f64 {
+        if self.id > 11 {
+            panic!("Invalid note id: {}", self.id);
+        }
         let multiplier =
             (2_f64).powf(((self.id as f64 - 9.0) + 12.0 * (self.octave as f64 - 4.0)) / 12.0);
-        440.0 * multiplier
+        let frequency = 440.0 * multiplier;
+        frequency
     }
 }
 
