@@ -105,15 +105,7 @@ let frequency = 440.0 * 2.0_f64.powf(n / 12.0)
 
 Sound is vibrations, and pure musical tones can be represented as **sine waves**. A sine wave oscillates smoothly between -1 and +1.
 
-```
-         1.0  ╱╲      ╱╲      ╱╲
-              ╱  ╲    ╱  ╲    ╱  ╲
-    ─────────╯────╲──╯────╲──╯────╲───── time
-                   ╲╱      ╲╱      ╲╱
-        -1.0
-
-         |<─ Period ─>|
-```
+![sin](https://github.com/user-attachments/assets/208d9802-d65d-4e08-adda-78218231e7a8)
 
 The formula to generate a sample at any point in time:
 
@@ -165,42 +157,7 @@ let float_sample = sine_sample.clamp(-1.0, 1.0);
 
 A WAV file is a container format following the **RIFF** (Resource Interchange File Format) structure. It consists of **chunks** of data:
 
-```
-┌─────────────────────────────────────┐
-│      RIFF HEADER (12 bytes)         │
-│  ┌─────────────────────────────┐   │
-│  │ "RIFF" (4 bytes)            │   │  ← Identifies file type
-│  │ File Size - 8 (4 bytes)     │   │  ← Total file size minus 8
-│  │ "WAVE" (4 bytes)            │   │  ← Wave format identifier
-│  └─────────────────────────────┘   │
-└─────────────────────────────────────┘
-┌─────────────────────────────────────┐
-│      fmt CHUNK (24 bytes)           │
-│  ┌─────────────────────────────┐   │
-│  │ "fmt " (4 bytes)            │   │  ← Format chunk marker
-│  │ Chunk Size: 16 (4 bytes)    │   │  ← Size of fmt data
-│  │ Audio Format: 1 (2 bytes)   │   │  ← 1 = PCM
-│  │ Channels: 1 (2 bytes)       │   │  ← Mono audio
-│  │ Sample Rate: 44100 (4 bytes)│   │  ← 44.1 kHz
-│  │ Byte Rate (4 bytes)         │   │  ← Bytes per second
-│  │ Block Align (2 bytes)       │   │  ← Bytes per sample
-│  │ Bits Per Sample: 16 (2 bytes)  │  ← 16-bit PCM
-│  └─────────────────────────────┘   │
-└─────────────────────────────────────┘
-┌─────────────────────────────────────┐
-│      data CHUNK (8 + N bytes)       │
-│  ┌─────────────────────────────┐   │
-│  │ "data" (4 bytes)            │   │  ← Data chunk marker
-│  │ Data Size (4 bytes)         │   │  ← Size of audio data
-│  │ ┌─────────────────────────┐ │   │
-│  │ │  PCM Sample 1 (2 bytes) │ │   │  ← Actual audio data
-│  │ │  PCM Sample 2 (2 bytes) │ │   │  ← One 16-bit int per
-│  │ │  PCM Sample 3 (2 bytes) │ │   │  ← sample
-│  │ │         ...             │ │   │
-│  │ └─────────────────────────┘ │   │
-│  └─────────────────────────────┘   │
-└─────────────────────────────────────┘
-```
+![wav_headers](https://github.com/user-attachments/assets/38b9f1d7-422f-42b3-9287-9e75fa8ad4a2)
 
 **Key calculations**:
 
@@ -215,59 +172,7 @@ All multi-byte integers are stored in **little-endian** format (least significan
 
 ### Processing Pipeline
 
-```
-┌──────────────┐
-│   main.rs    │  Entry point
-└──────┬───────┘
-       │
-       ├─► get_filepath()         ─┐
-       │                           │
-       ├─► get_music_input()       ├─── cli.rs
-       │                           │   (Argument parsing)
-       ├─► get_filename()          ─┘
-       │
-       ▼
-┌──────────────────┐
-│  Orchestrator    │  orchestrator.rs
-│  ┌────────────┐  │  (Music logic)
-│  │ bpm: 130   │  │
-│  │ notes: []  │  │
-│  └────────────┘  │
-└────────┬─────────┘
-         │
-         │ .pcm_samples(sample_rate)
-         │
-         ├─► For each Note:
-         │    ├─► Calculate frequency
-         │    │    (Equal temperament formula)
-         │    │
-         │    ├─► Calculate duration
-         │    │    (beats × seconds_per_beat)
-         │    │
-         │    └─► Generate samples
-         │         ┌──────────────────┐
-         │         │  SinOscillator   │  oscillator.rs
-         │         │                  │  (Wave generation)
-         │         │  .sample(i)      │  ← Sine wave
-         │         │  .pcm_sample(i)  │  ← PCM conversion
-         │         └──────────────────┘
-         │
-         ▼
-    Vec<i16> PCM samples
-         │
-         ▼
-┌──────────────────┐
-│     wav.rs       │  (File writing)
-│                  │
-│  write_wav()     │
-│   ├─► RIFF header
-│   ├─► fmt chunk
-│   └─► data chunk + samples
-└──────────────────┘
-         │
-         ▼
-    📁 output/octave.wav
-```
+![pipeline](https://github.com/user-attachments/assets/7b2d0445-f36a-4a9d-8308-09b5be305b4e)
 
 ### Module Breakdown
 
@@ -318,11 +223,6 @@ All multi-byte integers are stored in **little-endian** format (least significan
 - [Equal Temperament](https://en.wikipedia.org/wiki/Equal_temperament)
 - [Musical Note Frequencies](https://pages.mtu.edu/~suits/notefreqs.html)
 
-**Rust Audio**:
-
-- [cpal](https://github.com/RustAudio/cpal) - Cross-platform audio I/O
-- [rodio](https://github.com/RustAudio/rodio) - Audio playback library
-
 ## 🎓 What I Learned
 
 - How WAV files are structured (RIFF format, chunks)
@@ -342,7 +242,7 @@ Want to contribute or experiment? Here are some ideas:
 - Add effects (reverb, delay, filters)
 - Stereo output support
 - Real-time audio playback
-- GUI for composing music
+- GUI for composing music (using tauri)
 
 ## 📄 License
 
