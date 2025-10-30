@@ -4,7 +4,7 @@ use serde::Deserialize;
 pub struct Note {
     id: u8,
     octave: u8,
-    semitones: u8,
+    beats: f64,
 }
 
 impl Note {
@@ -15,7 +15,12 @@ impl Note {
     }
 }
 
+#[derive(Debug, Deserialize)]
 pub struct Orchestrator {
     bpm: u8, //beats per min
     notes: Vec<Note>,
 }
+
+// impl Orchestrator {
+//     pub fn pcm_samples(&self) -> Vec<i16> {}
+// }

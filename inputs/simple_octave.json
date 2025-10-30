@@ -1,20 +1,20 @@
 {
   "bpm": 130,
   "notes": [
-    { "id": 0, "semitones": 8, "octave": 4 },
-    { "id": 2, "semitones": 8, "octave": 4 },
-    { "id": 4, "semitones": 8, "octave": 4 },
-    { "id": 5, "semitones": 8, "octave": 4 },
-    { "id": 7, "semitones": 8, "octave": 4 },
-    { "id": 9, "semitones": 8, "octave": 4 },
-    { "id": 11, "semitones": 8, "octave": 4 },
-    { "id": 12, "semitones": 8, "octave": 5 },
-    { "id": 11, "semitones": 8, "octave": 4 },
-    { "id": 9, "semitones": 8, "octave": 4 },
-    { "id": 7, "semitones": 8, "octave": 4 },
-    { "id": 5, "semitones": 8, "octave": 4 },
-    { "id": 4, "semitones": 8, "octave": 4 },
-    { "id": 2, "semitones": 8, "octave": 4 },
-    { "id": 0, "semitones": 8, "octave": 4 }
+    { "id": 0, "beats": 8.0, "octave": 4 },
+    { "id": 2, "beats": 8.0, "octave": 4 },
+    { "id": 4, "beats": 8.0, "octave": 4 },
+    { "id": 5, "beats": 8.0, "octave": 4 },
+    { "id": 7, "beats": 8.0, "octave": 4 },
+    { "id": 9, "beats": 8.0, "octave": 4 },
+    { "id": 11, "beats": 8.0, "octave": 4 },
+    { "id": 12, "beats": 8.0, "octave": 5 },
+    { "id": 11, "beats": 8.0, "octave": 4 },
+    { "id": 9, "beats": 8.0, "octave": 4 },
+    { "id": 7, "beats": 8.0, "octave": 4 },
+    { "id": 5, "beats": 8.0, "octave": 4 },
+    { "id": 4, "beats": 8.0, "octave": 4 },
+    { "id": 2, "beats": 8.0, "octave": 4 },
+    { "id": 0, "beats": 8.0, "octave": 4 }
   ]
 }
