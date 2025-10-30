@@ -1,2 +1,5 @@
 *
 !.gitignore
+
+!octave.wav
+!test_drive.wav
