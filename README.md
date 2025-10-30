@@ -70,6 +70,26 @@ Each note has a unique ID (0-11) representing the 12 semitones in an octave:
 - **`octave`**: Which octave (typically 0-8, where 4 is middle octave)
 - **`amplitude`**: Volume (0.0 to 1.0, where 1.0 is maximum)
 
+## 🎵 Example Outputs
+
+This repository includes two example WAV files demonstrating the synthesizer's capabilities:
+
+### 🎼 octave.wav
+
+A simple C major scale demonstration - plays the notes C-D-E-F-G-A-B-C ascending and then back down. Perfect for understanding basic note sequencing and how the synthesizer handles different pitches.
+
+- **Listen**: [Download octave.wav](https://raw.githubusercontent.com/sihilelh/orchestrator-rust/refs/heads/main/output/octave.wav)
+- **Source**: [View octave.json](https://github.com/sihilelh/orchestrator-rust/blob/main/inputs/octave.json) for technical details (BPM, note timings, amplitudes)
+
+### 🐉 test_drive.wav
+
+A simplified interpretation of the opening melody from "Test Drive" - the iconic theme from _How to Train Your Dragon_ that plays during Hiccup's first flight with Toothless. This piece holds special meaning as it represents my first flight with Rust! 🦀
+
+- **Listen**: [Download test_drive.wav](https://raw.githubusercontent.com/sihilelh/orchestrator-rust/refs/heads/main/output/test_drive.wav)
+- **Source**: [View test_drive.json](https://github.com/sihilelh/orchestrator-rust/blob/main/inputs/test_drive.json) for technical details (BPM, note timings, amplitudes)
+
+**How to play**: Download the WAV files and open them in any audio player (Windows Media Player, VLC, iTunes, QuickTime, etc.)
+
 ## 🧠 Key Concepts & Implementation
 
 ### 1. Frequency Calculation (Equal Temperament Tuning)
