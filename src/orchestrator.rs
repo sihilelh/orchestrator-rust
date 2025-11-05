@@ -1,4 +1,4 @@
-use crate::oscillator::SinOscillator;
+use crate::oscillator::{BezierOscillator, SinOscillator};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -21,13 +21,40 @@ impl Note {
     }
 }
 
-#[derive(Debug, Deserialize)]
-pub struct Orchestrator {
+pub enum Orchestrator {
+    Sine(SineOrchestrator),
+    Bezier(BezierOrchestrator),
+}
+
+impl Orchestrator {
+    pub fn pcm_samples(&self, sample_rate: u32) -> Vec<i16> {
+        match self {
+            Orchestrator::Sine(sine) => sine.pcm_samples(sample_rate),
+            Orchestrator::Bezier(bezier) => bezier.pcm_samples(sample_rate),
+        }
+    }
+
+    pub fn new(bpm: u8, notes: Vec<Note>, control_points: Option<Vec<f64>>) -> Self {
+        if control_points.is_some() {
+            println!("Generating sounds using bezier curves");
+            Orchestrator::Bezier(BezierOrchestrator {
+                bpm,
+                notes,
+                control_points: control_points.unwrap(),
+            })
+        } else {
+            println!("Generating sounds using sine waves");
+            Orchestrator::Sine(SineOrchestrator { bpm, notes })
+        }
+    }
+}
+
+pub struct SineOrchestrator {
     bpm: u8, //beats per min
     notes: Vec<Note>,
 }
 
-impl Orchestrator {
+impl SineOrchestrator {
     pub fn pcm_samples(&self, sample_rate: u32) -> Vec<i16> {
         let mut samples: Vec<i16> = Vec::new();
         let seconds_per_beat = 60.0 / self.bpm as f64;
@@ -38,6 +65,34 @@ impl Orchestrator {
                 frequency: note.frequency(),
                 sample_rate: sample_rate,
             };
+            let duration = note.beats * seconds_per_beat;
+            let samples_per_note = (duration * sample_rate as f64) as u32;
+            for i in 0..samples_per_note {
+                samples.push(wave.pcm_sample(i));
+            }
+        }
+        samples
+    }
+}
+
+pub struct BezierOrchestrator {
+    bpm: u8, //beats per min
+    notes: Vec<Note>,
+    control_points: Vec<f64>,
+}
+
+impl BezierOrchestrator {
+    pub fn pcm_samples(&self, sample_rate: u32) -> Vec<i16> {
+        let mut samples: Vec<i16> = Vec::new();
+        let seconds_per_beat = 60.0 / self.bpm as f64;
+
+        for note in &self.notes {
+            let wave = BezierOscillator::new(
+                note.frequency(),
+                note.amplitude,
+                sample_rate,
+                self.control_points.clone(),
+            );
             let duration = note.beats * seconds_per_beat;
             let samples_per_note = (duration * sample_rate as f64) as u32;
             for i in 0..samples_per_note {
