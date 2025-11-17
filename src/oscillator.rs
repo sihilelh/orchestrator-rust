@@ -1,3 +1,5 @@
+use crate::errors::OrchestratorError;
+use crate::validation::validate_control_points;
 use std::f64::consts::PI;
 
 const PCM_BIT_RANGE: u32 = 2_u32.pow(16 - 1) - 1;
@@ -32,21 +34,21 @@ pub struct BezierOscillator {
 }
 
 impl BezierOscillator {
-    pub fn new(frequency: f64, amplitude: f64, sample_rate: u32, control_points: Vec<f64>) -> Self {
-        if control_points.len() != 4 {
-            panic!("BezierOscillator requires exactly 4 control points");
-        }
-        for point in &control_points {
-            if *point < -1.0 || *point > 1.0 {
-                panic!("Control point must be between -1.0 and 1.0");
-            }
-        }
-        Self {
+    pub fn new(
+        frequency: f64,
+        amplitude: f64,
+        sample_rate: u32,
+        control_points: Vec<f64>,
+    ) -> Result<Self, OrchestratorError> {
+        // Validate control points using centralized validation
+        validate_control_points(&control_points)?;
+
+        Ok(Self {
             frequency,
             amplitude,
             sample_rate,
             control_points,
-        }
+        })
     }
 
     pub fn sample(&self, sample_index: u32) -> f64 {
