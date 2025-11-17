@@ -1,0 +1,237 @@
+{
+  "bpm": 145,
+  "timeline": true,
+  "notes": [
+    {
+      "id": 7,
+      "start_time": 0.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.8
+    },
+    {
+      "id": 0,
+      "start_time": 1.0,
+      "duration": 1.0,
+      "octave": 5,
+      "amplitude": 0.9
+    },
+    {
+      "id": 7,
+      "start_time": 1.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.8
+    },
+    {
+      "id": 0,
+      "start_time": 2.0,
+      "duration": 1.0,
+      "octave": 5,
+      "amplitude": 0.9
+    },
+    {
+      "id": 2,
+      "start_time": 3.0,
+      "duration": 1.0,
+      "octave": 5,
+      "amplitude": 0.8
+    },
+    {
+      "id": 11,
+      "start_time": 4.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.85
+    },
+    {
+      "id": 7,
+      "start_time": 5.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.8
+    },
+    {
+      "id": 11,
+      "start_time": 6.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.85
+    },
+    {
+      "id": 0,
+      "start_time": 7.0,
+      "duration": 1.0,
+      "octave": 5,
+      "amplitude": 0.9
+    },
+    {
+      "id": 9,
+      "start_time": 8.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.85
+    },
+    {
+      "id": 7,
+      "start_time": 9.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.8
+    },
+    {
+      "id": 7,
+      "start_time": 10.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.8
+    },
+    {
+      "id": 5,
+      "start_time": 11.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.75
+    },
+    {
+      "id": 5,
+      "start_time": 12.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.75
+    },
+    {
+      "id": 4,
+      "start_time": 13.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.7
+    },
+    {
+      "id": 2,
+      "start_time": 14.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.7
+    },
+    {
+      "id": 0,
+      "start_time": 15.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.7
+    },
+    {
+      "id": 0,
+      "start_time": 16.0,
+      "duration": 1.0,
+      "octave": 5,
+      "amplitude": 0.9
+    },
+    {
+      "id": 7,
+      "start_time": 17.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.8
+    },
+    {
+      "id": 0,
+      "start_time": 18.0,
+      "duration": 1.0,
+      "octave": 5,
+      "amplitude": 0.9
+    },
+    {
+      "id": 2,
+      "start_time": 19.0,
+      "duration": 1.0,
+      "octave": 5,
+      "amplitude": 0.8
+    },
+    {
+      "id": 11,
+      "start_time": 20.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.85
+    },
+    {
+      "id": 7,
+      "start_time": 21.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.8
+    },
+    {
+      "id": 11,
+      "start_time": 22.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.85
+    },
+    {
+      "id": 0,
+      "start_time": 23.0,
+      "duration": 1.0,
+      "octave": 5,
+      "amplitude": 0.9
+    },
+    {
+      "id": 9,
+      "start_time": 24.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.85
+    },
+    {
+      "id": 7,
+      "start_time": 25.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.8
+    },
+    {
+      "id": 7,
+      "start_time": 26.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.8
+    },
+    {
+      "id": 5,
+      "start_time": 27.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.75
+    },
+    {
+      "id": 5,
+      "start_time": 28.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.75
+    },
+    {
+      "id": 4,
+      "start_time": 29.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.7
+    },
+    {
+      "id": 2,
+      "start_time": 30.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.7
+    },
+    {
+      "id": 0,
+      "start_time": 31.0,
+      "duration": 1.0,
+      "octave": 4,
+      "amplitude": 0.7
+    }
+  ]
+}

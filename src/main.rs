@@ -1,5 +1,4 @@
-use crate::cli::{get_filename, get_music_input, parse_args};
-use crate::orchestrator::Orchestrator;
+use crate::cli::{get_filename, get_music_input, parse_args, AnyOrchestrator};
 use anyhow::{Context, Result};
 
 mod cli;
@@ -7,6 +6,7 @@ mod errors;
 mod feedback;
 mod orchestrator;
 mod oscillator;
+mod timeline_orchestrator;
 mod validation;
 mod wav;
 
@@ -21,7 +21,7 @@ fn main() -> Result<()> {
         "Loading input file: {}",
         args.input_file.display()
     ));
-    let orchestrator: Orchestrator =
+    let orchestrator: AnyOrchestrator =
         get_music_input(&args.input_file).context("Failed to load and parse music input")?;
 
     // Step 2: Validate and show configuration
