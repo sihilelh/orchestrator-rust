@@ -256,12 +256,12 @@ All multi-byte integers are stored in **little-endian** format (least significan
 
 Want to contribute or experiment? Here are some ideas:
 
-[x] Add support for different waveforms (square, sawtooth, triangle) - Using Bézier curves
-[x] Support for chords (multiple simultaneous notes) - New version uses timeline based system
-[x] GUI for composing music (using WebAssembly and React) - Visit [https://orchestrator.sihilel.com](https://orchestrator.sihilel.com)
-[] Implement ADSR envelope (Attack, Decay, Sustain, Release)
-[] Add effects (reverb, delay, filters)
-[] Stereo output support
+- [x] Add support for different waveforms (square, sawtooth, triangle) - Using Bézier curves
+- [x] Support for chords (multiple simultaneous notes) - New version uses timeline based system
+- [x] GUI for composing music (using WebAssembly and React) - Visit [https://orchestrator.sihilel.com](https://orchestrator.sihilel.com)
+- [ ] Implement ADSR envelope (Attack, Decay, Sustain, Release)
+- [ ] Add effects (reverb, delay, filters)
+- [ ] Stereo output support
 
 ## 📄 License
 
