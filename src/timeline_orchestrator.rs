@@ -3,6 +3,10 @@ use crate::oscillator::{BezierOscillator, SinOscillator};
 use crate::validation::{validate_bpm, validate_control_points, validate_timeline_notes};
 use serde::Deserialize;
 
+// For safe mixing we will condense the amplitude
+const CONDENSE_CONSTANT: f64 = 0.9;
+const PCM_BIT_RANGE: f64 = 32767.0; // 2^15 - 1
+
 #[derive(Debug, Deserialize)]
 pub struct TimelineNote {
     id: u8,
@@ -95,43 +99,54 @@ impl TimelineSineOrchestrator {
     pub fn pcm_samples(&self, sample_rate: u32) -> Result<Vec<i16>, OrchestratorError> {
         let seconds_per_beat = 60.0 / self.bpm as f64;
 
-        // Calculate total duration needed (convert beats to seconds)
-        let total_duration = self
-            .notes
-            .iter()
-            .map(|note| (note.start_time + note.duration) * seconds_per_beat)
-            .fold(0.0, f64::max);
+        let mut total_duration_in_beats: f64 = 0.0;
+        for note in &self.notes {
+            total_duration_in_beats = total_duration_in_beats.max(note.start_time + note.duration);
+        }
 
-        let total_samples = (total_duration * sample_rate as f64).ceil() as usize;
-        let mut samples = vec![0i16; total_samples];
+        let total_duration_in_seconds = total_duration_in_beats * seconds_per_beat;
+        let total_samples: usize = (total_duration_in_seconds * sample_rate as f64).ceil() as usize;
 
-        // Process each note and mix into the timeline
+        // Create a vector with specified capacity and with default value = 0 to avoid reallocations
+        // Creating it f64 because these samples are not clipped
+        // This acts like the timeline
+        let mut pcm_sample_sums: Vec<f64> = vec![0.0; total_samples];
+
+        // Process each note and mix it at the same time
         for note in &self.notes {
             let wave = SinOscillator {
-                amplitude: note.amplitude,
                 frequency: note.frequency()?,
+                amplitude: note.amplitude * CONDENSE_CONSTANT,
                 sample_rate: sample_rate,
             };
 
-            // Convert beats to seconds
-            let start_time_seconds = note.start_time * seconds_per_beat;
-            let duration_seconds = note.duration * seconds_per_beat;
+            let start_sample = (note.start_time * seconds_per_beat * sample_rate as f64) as usize;
+            let samples_for_this_note =
+                (note.duration * seconds_per_beat * sample_rate as f64) as usize;
 
-            let start_sample = (start_time_seconds * sample_rate as f64) as usize;
-            let samples_per_note = (duration_seconds * sample_rate as f64) as usize;
-
-            for i in 0..samples_per_note {
-                let sample_index = start_sample + i;
-                if sample_index < total_samples {
-                    // Mix the samples (simple addition, with clamping)
-                    let new_sample = wave.pcm_sample(i as u32) as f64;
-                    let existing_sample = samples[sample_index] as f64;
-                    let mixed = (new_sample + existing_sample).clamp(-32768.0, 32767.0) as i16;
-                    samples[sample_index] = mixed;
+            for i in 0..samples_for_this_note {
+                let current_sample_index = start_sample + i;
+                if current_sample_index < total_samples {
+                    let current_sample = wave.pcm_sample(i as u32);
+                    pcm_sample_sums[current_sample_index] += current_sample as f64;
                 }
             }
         }
-        Ok(samples)
+
+        // Normalize, apply soft clipping with tanh, and convert to PCM
+        let pcm_samples: Vec<i16> = pcm_sample_sums
+            .iter()
+            .map(|&sum| {
+                // Normalize from accumulated PCM range back to [-1, 1]
+                let normalized = sum / PCM_BIT_RANGE;
+                // Apply soft clipping with tanh
+                let clipped = normalized.tanh();
+                // Convert back to PCM i16 range
+                (clipped * PCM_BIT_RANGE) as i16
+            })
+            .collect();
+
+        Ok(pcm_samples)
     }
 }
 
@@ -145,43 +160,54 @@ impl TimelineBezierOrchestrator {
     pub fn pcm_samples(&self, sample_rate: u32) -> Result<Vec<i16>, OrchestratorError> {
         let seconds_per_beat = 60.0 / self.bpm as f64;
 
-        // Calculate total duration needed (convert beats to seconds)
-        let total_duration = self
-            .notes
-            .iter()
-            .map(|note| (note.start_time + note.duration) * seconds_per_beat)
-            .fold(0.0, f64::max);
+        let mut total_duration_in_beats: f64 = 0.0;
+        for note in &self.notes {
+            total_duration_in_beats = total_duration_in_beats.max(note.start_time + note.duration);
+        }
 
-        let total_samples = (total_duration * sample_rate as f64).ceil() as usize;
-        let mut samples = vec![0i16; total_samples];
+        let total_duration_in_seconds = total_duration_in_beats * seconds_per_beat;
+        let total_samples: usize = (total_duration_in_seconds * sample_rate as f64).ceil() as usize;
 
-        // Process each note and mix into the timeline
+        // Create a vector with specified capacity and with default value = 0 to avoid reallocations
+        // Creating it f64 because these samples are not clipped
+        // This acts like the timeline
+        let mut pcm_sample_sums: Vec<f64> = vec![0.0; total_samples];
+
+        // Process each note and mix it at the same time
         for note in &self.notes {
             let wave = BezierOscillator::new(
                 note.frequency()?,
-                note.amplitude,
+                note.amplitude * CONDENSE_CONSTANT,
                 sample_rate,
                 self.control_points.clone(),
             )?;
 
-            // Convert beats to seconds
-            let start_time_seconds = note.start_time * seconds_per_beat;
-            let duration_seconds = note.duration * seconds_per_beat;
+            let start_sample = (note.start_time * seconds_per_beat * sample_rate as f64) as usize;
+            let samples_for_this_note =
+                (note.duration * seconds_per_beat * sample_rate as f64) as usize;
 
-            let start_sample = (start_time_seconds * sample_rate as f64) as usize;
-            let samples_per_note = (duration_seconds * sample_rate as f64) as usize;
-
-            for i in 0..samples_per_note {
-                let sample_index = start_sample + i;
-                if sample_index < total_samples {
-                    // Mix the samples (simple addition, with clamping)
-                    let new_sample = wave.pcm_sample(i as u32) as f64;
-                    let existing_sample = samples[sample_index] as f64;
-                    let mixed = (new_sample + existing_sample).clamp(-32768.0, 32767.0) as i16;
-                    samples[sample_index] = mixed;
+            for i in 0..samples_for_this_note {
+                let current_sample_index = start_sample + i;
+                if current_sample_index < total_samples {
+                    let current_sample = wave.pcm_sample(i as u32);
+                    pcm_sample_sums[current_sample_index] += current_sample as f64;
                 }
             }
         }
-        Ok(samples)
+
+        // Normalize, apply soft clipping with tanh, and convert to PCM
+        let pcm_samples: Vec<i16> = pcm_sample_sums
+            .iter()
+            .map(|&sum| {
+                // Normalize from accumulated PCM range back to [-1, 1]
+                let normalized = sum / PCM_BIT_RANGE;
+                // Apply soft clipping with tanh
+                let clipped = normalized.tanh();
+                // Convert back to PCM i16 range
+                (clipped * PCM_BIT_RANGE) as i16
+            })
+            .collect();
+
+        Ok(pcm_samples)
     }
 }
