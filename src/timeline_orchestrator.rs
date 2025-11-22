@@ -8,12 +8,6 @@ use serde::Deserialize;
 const CONDENSE_CONSTANT: f64 = 0.9;
 const PCM_BIT_RANGE: f64 = 32767.0; // 2^15 - 1
 
-// Temporary add hardcoded attack, decay, sustain, release values
-const ATTACK: f64 = 0.01;
-const DECAY: f64 = 0.01;
-const SUSTAIN: f64 = 0.9;
-const RELEASE: f64 = 0.01;
-
 #[derive(Debug, Deserialize)]
 pub struct TimelineNote {
     id: u8,
@@ -65,10 +59,14 @@ impl TimelineOrchestrator {
         bpm: u8,
         notes: Vec<TimelineNote>,
         control_points: Option<Vec<f64>>,
+        adsr: Option<(f64, f64, f64, f64)>,
     ) -> Result<Self, OrchestratorError> {
         // Validate inputs
         validate_bpm(bpm)?;
         validate_timeline_notes(&notes)?;
+
+        // Extract ADSR values, defaulting to 0.0 if not provided
+        let (attack, decay, sustain, release) = adsr.unwrap_or((0.0, 0.0, 0.0, 0.0));
 
         if let Some(ref points) = control_points {
             validate_control_points(points)?;
@@ -76,11 +74,19 @@ impl TimelineOrchestrator {
                 bpm,
                 notes,
                 control_points: points.clone(),
+                attack,
+                decay,
+                sustain,
+                release,
             }))
         } else {
             Ok(TimelineOrchestrator::Sine(TimelineSineOrchestrator {
                 bpm,
                 notes,
+                attack,
+                decay,
+                sustain,
+                release,
             }))
         }
     }
@@ -100,6 +106,10 @@ impl TimelineOrchestrator {
 pub struct TimelineSineOrchestrator {
     bpm: u8, //beats per min
     notes: Vec<TimelineNote>,
+    attack: f64,
+    decay: f64,
+    sustain: f64,
+    release: f64,
 }
 
 impl TimelineSineOrchestrator {
@@ -112,7 +122,7 @@ impl TimelineSineOrchestrator {
         }
 
         // Add the release time to the total duration (for last note's release)
-        let total_duration_in_seconds = total_duration_in_beats * seconds_per_beat + RELEASE;
+        let total_duration_in_seconds = total_duration_in_beats * seconds_per_beat + self.release;
         let total_samples: usize = (total_duration_in_seconds * sample_rate as f64).ceil() as usize;
 
         // Create a vector with specified capacity and with default value = 0 to avoid reallocations
@@ -130,13 +140,13 @@ impl TimelineSineOrchestrator {
 
             let start_sample = (note.start_time * seconds_per_beat * sample_rate as f64) as usize;
             let samples_for_this_note =
-                ((note.duration + RELEASE) * seconds_per_beat * sample_rate as f64) as usize;
+                ((note.duration + self.release) * seconds_per_beat * sample_rate as f64) as usize;
 
             let mut envelope = ADSREnvelope::new(
-                ATTACK,
-                DECAY,
-                SUSTAIN,
-                RELEASE,
+                self.attack,
+                self.decay,
+                self.sustain,
+                self.release,
                 sample_rate,
                 (note.duration) * seconds_per_beat,
             );
@@ -170,6 +180,10 @@ pub struct TimelineBezierOrchestrator {
     bpm: u8, //beats per min
     notes: Vec<TimelineNote>,
     control_points: Vec<f64>,
+    attack: f64,
+    decay: f64,
+    sustain: f64,
+    release: f64,
 }
 
 impl TimelineBezierOrchestrator {
@@ -181,7 +195,8 @@ impl TimelineBezierOrchestrator {
             total_duration_in_beats = total_duration_in_beats.max(note.start_time + note.duration);
         }
 
-        let total_duration_in_seconds = total_duration_in_beats * seconds_per_beat;
+        // Add the release time to the total duration (for last note's release)
+        let total_duration_in_seconds = total_duration_in_beats * seconds_per_beat + self.release;
         let total_samples: usize = (total_duration_in_seconds * sample_rate as f64).ceil() as usize;
 
         // Create a vector with specified capacity and with default value = 0 to avoid reallocations
@@ -200,13 +215,23 @@ impl TimelineBezierOrchestrator {
 
             let start_sample = (note.start_time * seconds_per_beat * sample_rate as f64) as usize;
             let samples_for_this_note =
-                (note.duration * seconds_per_beat * sample_rate as f64) as usize;
+                ((note.duration + self.release) * seconds_per_beat * sample_rate as f64) as usize;
+
+            let mut envelope = ADSREnvelope::new(
+                self.attack,
+                self.decay,
+                self.sustain,
+                self.release,
+                sample_rate,
+                (note.duration) * seconds_per_beat,
+            );
 
             for i in 0..samples_for_this_note {
                 let current_sample_index = start_sample + i;
                 if current_sample_index < total_samples {
-                    let current_sample = wave.pcm_sample(i as u32);
-                    pcm_sample_sums[current_sample_index] += current_sample as f64;
+                    let raw_sample = wave.sample(i as u32);
+                    let processed_sample = envelope.apply(raw_sample, i as u32);
+                    pcm_sample_sums[current_sample_index] += processed_sample;
                 }
             }
         }

@@ -23,10 +23,20 @@ pub struct JSONInput {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct ADSRConfig {
+    attack: Option<f64>,
+    decay: Option<f64>,
+    sustain: Option<f64>,
+    release: Option<f64>,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct TimelineJSONInput {
     bpm: u8, //beats per min
     notes: Vec<TimelineNote>,
     control_points: Option<Vec<f64>>,
+    #[serde(rename = "adsr")]
+    adsr: Option<ADSRConfig>,
 }
 
 /// Enum to represent either orchestrator type
@@ -94,19 +104,57 @@ pub fn get_music_input(filepath: &Path) -> Result<AnyOrchestrator> {
         let timeline_input: TimelineJSONInput = serde_json::from_value(json_value)
             .context("Failed to parse timeline JSON input - ensure notes have 'start_time' and 'duration' fields")?;
 
+        // Extract ADSR values, defaulting to 0.0 if not provided
+        let adsr_values = timeline_input.adsr.as_ref().map(|adsr| {
+            (
+                adsr.attack.unwrap_or(0.0),
+                adsr.decay.unwrap_or(0.0),
+                adsr.sustain.unwrap_or(0.0),
+                adsr.release.unwrap_or(0.0),
+            )
+        });
+
+        // Log ADSR configuration
+        if let Some((attack, decay, sustain, release)) = adsr_values {
+            feedback::info(&format!(
+                "ADSR envelope: Attack={:.3}s, Decay={:.3}s, Sustain={:.3}, Release={:.3}s",
+                attack, decay, sustain, release
+            ));
+        } else {
+            feedback::info("ADSR envelope: Not specified (using defaults: all 0.0)");
+        }
+
+        // Log control points if present
+        if let Some(ref points) = timeline_input.control_points {
+            feedback::info(&format!(
+                "Bezier control points: [{:.1}, {:.1}, {:.1}, {:.1}]",
+                points[0], points[1], points[2], points[3]
+            ));
+        }
+
         let orchestrator = TimelineOrchestrator::new(
             timeline_input.bpm,
             timeline_input.notes,
             timeline_input.control_points,
+            adsr_values,
         )
         .map_err(|e| anyhow::anyhow!(e))
         .context("Failed to create timeline orchestrator from input")?;
 
         Ok(AnyOrchestrator::Timeline(orchestrator))
     } else {
+        feedback::info("Using regular orchestrator");
         // Parse as regular input
         let orchestrator_input: JSONInput = serde_json::from_value(json_value)
             .context("Failed to parse JSON input - ensure notes have 'beats' field")?;
+
+        // Log control points if present
+        if let Some(ref points) = orchestrator_input.control_points {
+            feedback::info(&format!(
+                "Bezier control points: [{:.1}, {:.1}, {:.1}, {:.1}]",
+                points[0], points[1], points[2], points[3]
+            ));
+        }
 
         let orchestrator = Orchestrator::new(
             orchestrator_input.bpm,
