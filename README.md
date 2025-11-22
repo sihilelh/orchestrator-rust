@@ -1,8 +1,24 @@
-# 🎵 Orchestrator - WAV Audio Synthesizer built using Rust
+# Orchestrator - WAV Audio Synthesizer built using Rust
+
+![Rust](https://img.shields.io/badge/rust-1.70+-orange.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![GitHub stars](https://img.shields.io/github/stars/sihilelh/orchestrator-rust?style=social)
+![GitHub forks](https://img.shields.io/github/forks/sihilelh/orchestrator-rust?style=social)
 
 A learning project that generates WAV audio files from JSON music notation by synthesizing sine waves and Bézier curves, with support for timeline-based composition, ADSR envelopes, and encoding them in PCM format. This is my first Rust application, built to understand how digital audio works at a low level!
 
-## 🎯 What This Does
+## Features
+
+![Timeline Format](https://img.shields.io/badge/Timeline%20Format-Supported-green)
+![ADSR Envelope](https://img.shields.io/badge/ADSR%20Envelope-Supported-green)
+![Bézier Waveforms](https://img.shields.io/badge/Bézier%20Waveforms-Supported-green)
+![WAV Export](https://img.shields.io/badge/WAV%20Export-16--bit%20PCM-blue)
+![Chords Support](https://img.shields.io/badge/Chords-Supported-green)
+![JSON Input](https://img.shields.io/badge/JSON%20Input-Supported-green)
+
+---
+
+## What This Does
 
 ```
 JSON Input → Parse Notes → Calculate Frequencies → Generate Waves (Sine/Bézier) → Apply ADSR Envelope → Mix & PCM Encoding → WAV File
@@ -10,7 +26,9 @@ JSON Input → Parse Notes → Calculate Frequencies → Generate Waves (Sine/B�
 
 Takes musical notes described in JSON, calculates their frequencies, generates sine waves or custom Bézier waveforms for each note, applies ADSR envelopes for natural sound shaping, mixes overlapping notes for chords, converts everything to PCM (Pulse Code Modulation) format, and writes to a proper WAV file with RIFF headers.
 
-## 🚀 Quick Start
+---
+
+## Quick Start
 
 ### Build & Run
 
@@ -29,7 +47,9 @@ cargo run --release inputs/octave.json
 - Rust (2021 edition or later)
 - Dependencies: `serde`, `serde_json`
 
-## 📝 JSON Input Format
+---
+
+## JSON Input Format
 
 The orchestrator supports two input formats: **Regular** (sequential notes) and **Timeline** (overlapping notes with precise timing).
 
@@ -203,25 +223,27 @@ Provide 4 control points (each between -1.0 and 1.0):
 
 This works in both Regular and Timeline formats. If not provided, the orchestrator uses sine waves.
 
-## 🎵 Example Outputs
+---
 
-This repository includes two example WAV files demonstrating the synthesizer's capabilities:
+## Example Outputs
 
-### 🎼 octave.wav
+This repository includes example WAV files demonstrating the synthesizer's capabilities:
+
+### octave.wav
 
 A simple C major scale demonstration - plays the notes C-D-E-F-G-A-B-C ascending and then back down. Perfect for understanding basic note sequencing and how the synthesizer handles different pitches.
 
 - **Listen**: [Download octave.wav](https://raw.githubusercontent.com/sihilelh/orchestrator-rust/refs/heads/main/output/octave.wav)
 - **Source**: [View octave.json](https://github.com/sihilelh/orchestrator-rust/blob/main/inputs/octave.json) for technical details (BPM, note timings, amplitudes)
 
-### 🐉 test_drive.wav
+### test_drive.wav
 
-A simplified interpretation of the opening melody from "Test Drive" - the iconic theme from _How to Train Your Dragon_ that plays during Hiccup's first flight with Toothless. This piece holds special meaning as it represents my first flight with Rust! 🦀
+A simplified interpretation of the opening melody from "Test Drive" - the iconic theme from _How to Train Your Dragon_ that plays during Hiccup's first flight with Toothless. This piece holds special meaning as it represents my first flight with Rust!
 
 - **Listen**: [Download test_drive.wav](https://raw.githubusercontent.com/sihilelh/orchestrator-rust/refs/heads/main/output/test_drive.wav)
 - **Source**: [View test_drive.json](https://github.com/sihilelh/orchestrator-rust/blob/main/inputs/test_drive.json) for technical details (BPM, note timings, amplitudes)
 
-### 🎹 test_drive_timeline.wav
+### test_drive_timeline.wav
 
 The same "Test Drive" melody, but using the timeline format with ADSR envelopes and overlapping notes for richer, more natural-sounding chords. Demonstrates the power of timeline-based composition!
 
@@ -230,7 +252,7 @@ The same "Test Drive" melody, but using the timeline format with ADSR envelopes 
 
 **How to play**: Download the WAV files and open them in any audio player (Windows Media Player, VLC, iTunes, QuickTime, etc.)
 
-### 📊 Format Comparison
+### Format Comparison
 
 | Feature               | Regular Format                           | Timeline Format                                |
 | --------------------- | ---------------------------------------- | ---------------------------------------------- |
@@ -241,7 +263,9 @@ The same "Test Drive" melody, but using the timeline format with ADSR envelopes 
 | **Use Case**          | Simple melodies, sequential compositions | Complex arrangements, chords, polyphonic music |
 | **Activation**        | Default (no special field)               | Set `"timeline": true`                         |
 
-## 🧠 Key Concepts & Implementation
+---
+
+## Key Concepts & Implementation
 
 ### 1. Frequency Calculation (Equal Temperament Tuning)
 
@@ -388,7 +412,9 @@ A WAV file is a container format following the **RIFF** (Resource Interchange Fi
 
 All multi-byte integers are stored in **little-endian** format (least significant byte first).
 
-## 🏗️ Code Architecture
+---
+
+## Code Architecture
 
 ### Processing Pipeline
 
@@ -444,7 +470,9 @@ All multi-byte integers are stored in **little-endian** format (least significan
 - Writes data chunk header (8 bytes)
 - Writes all PCM samples as little-endian bytes
 
-## 📚 Learn More
+---
+
+## Learn More
 
 **WAV Format**:
 
@@ -461,7 +489,9 @@ All multi-byte integers are stored in **little-endian** format (least significan
 - [Equal Temperament](https://en.wikipedia.org/wiki/Equal_temperament)
 - [Musical Note Frequencies](https://pages.mtu.edu/~suits/notefreqs.html)
 
-## 🎓 What I Learned
+---
+
+## What I Learned
 
 - How WAV files are structured (RIFF format, chunks)
 - Converting musical notation to frequencies
@@ -474,7 +504,9 @@ All multi-byte integers are stored in **little-endian** format (least significan
 - Rust basics: modules, error handling, file I/O, enums, state machines
 - Working with binary data and byte ordering (little-endian)
 
-## 🛠️ Possible Improvements
+---
+
+## Possible Improvements
 
 Want to contribute or experiment? Here are some ideas:
 
@@ -485,10 +517,12 @@ Want to contribute or experiment? Here are some ideas:
 [] Add effects (reverb, delay, filters)
 [] Stereo output support
 
-## 📄 License
+---
 
-This is a learning project - feel free to use, modify, and learn from it!
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-**Made with 🦀 Rust as a learning adventure into digital audio synthesis**
+**Made with Rust as a learning adventure into digital audio synthesis**
