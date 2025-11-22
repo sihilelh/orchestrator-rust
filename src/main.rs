@@ -1,6 +1,7 @@
-use crate::cli::{get_filename, get_music_input, parse_args, AnyOrchestrator};
+use crate::cli::{AnyOrchestrator, get_filename, get_music_input, parse_args};
 use anyhow::{Context, Result};
 
+mod adsr;
 mod cli;
 mod errors;
 mod feedback;
