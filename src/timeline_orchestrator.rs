@@ -65,8 +65,8 @@ impl TimelineOrchestrator {
         validate_bpm(bpm)?;
         validate_timeline_notes(&notes)?;
 
-        // Extract ADSR values, defaulting to 0.0 if not provided
-        let (attack, decay, sustain, release) = adsr.unwrap_or((0.0, 0.0, 0.0, 0.0));
+        // Extract ADSR values, defaulting sustain to 1.0, others to 0.0 if not provided
+        let (attack, decay, sustain, release) = adsr.unwrap_or((0.0, 0.0, 1.0, 0.0));
 
         if let Some(ref points) = control_points {
             validate_control_points(points)?;

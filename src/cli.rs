@@ -104,12 +104,12 @@ pub fn get_music_input(filepath: &Path) -> Result<AnyOrchestrator> {
         let timeline_input: TimelineJSONInput = serde_json::from_value(json_value)
             .context("Failed to parse timeline JSON input - ensure notes have 'start_time' and 'duration' fields")?;
 
-        // Extract ADSR values, defaulting to 0.0 if not provided
+        // Extract ADSR values, defaulting sustain to 1.0, others to 0.0 if not provided
         let adsr_values = timeline_input.adsr.as_ref().map(|adsr| {
             (
                 adsr.attack.unwrap_or(0.0),
                 adsr.decay.unwrap_or(0.0),
-                adsr.sustain.unwrap_or(0.0),
+                adsr.sustain.unwrap_or(1.0),
                 adsr.release.unwrap_or(0.0),
             )
         });
@@ -121,7 +121,9 @@ pub fn get_music_input(filepath: &Path) -> Result<AnyOrchestrator> {
                 attack, decay, sustain, release
             ));
         } else {
-            feedback::info("ADSR envelope: Not specified (using defaults: all 0.0)");
+            feedback::info(
+                "ADSR envelope: Not specified (using defaults: attack=0.0, decay=0.0, sustain=1.0, release=0.0)",
+            );
         }
 
         // Log control points if present
